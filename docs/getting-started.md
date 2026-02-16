@@ -1,30 +1,30 @@
 ---
-title: Getting Started - Vedic Astro
-description: Learn how to install and use Kundali Charts SDK to generate Vedic Astrology charts with SVG rendering.
+title: Getting Started - Vedic Calc
+description: Learn how to install and use Vedic Calc SDK to generate Vedic Astrology charts with SVG rendering.
 keywords:
   - vedic astrology sdk
   - jyotish library
-  - kundali chart tutorial
+  - vedic calc tutorial
   - birth chart generation
   - swisseph tutorial
 ---
 
 # Getting Started
 
-This guide will help you install and use Kundali Charts SDK to generate Vedic Astrology charts.
+This guide will help you install and use Vedic Calc SDK to generate Vedic Astrology charts.
 
 ## Installation
 
 ### Using npm
 
 ```bash
-npm install kundali-charts
+npm install vedic-calc
 ```
 
 ### Using yarn
 
 ```bash
-yarn add kundali-charts
+yarn add vedic-calc
 ```
 
 ## Basic Usage

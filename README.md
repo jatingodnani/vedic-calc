@@ -1,22 +1,27 @@
 # Vedic Calc - Vedic Astrology Chart SDK
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/kundali-charts"><img src="https://img.shields.io/npm/v/kundali-charts.svg" alt="npm version"></a>
-  <a href="https://www.npmjs.com/package/kundali-charts"><img src="https://img.shields.io/npm/dm/kundali-charts.svg" alt="npm downloads"></a>
-  <a href="https://github.com/jatingodnani/kundali-charts/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/kundali-charts.svg" alt="MIT License"></a>
+  <a href="https://www.npmjs.com/package/vedic-calc"><img src="https://img.shields.io/npm/v/vedic-calc.svg" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/vedic-calc"><img src="https://img.shields.io/npm/dm/vedic-calc.svg" alt="npm downloads"></a>
+  <a href="https://github.com/jatingodnani/vedic-calc/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/vedic-calc.svg" alt="MIT License"></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.x-blue.svg" alt="TypeScript"></a>
 </p>
 
-> High-precision Vedic Astrology (Jyotish) chart generation library using Swiss Ephemeris. Generate Rasi (D-1), Navamsa (D-9) charts and beautiful SVG visualizations.
+> High-precision Vedic Astrology (Jyotish) chart generation library using Swiss Ephemeris. Generate Rasi (D-1), Navamsa (D-9) charts with planetary positions (Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu), houses, nakshatras, ascendant, retrograde planets, and beautiful SVG visualizations.
 
 ## Features
 
-- **Rasi Chart (D-1)** - Complete birth chart with planetary positions
+- **Rasi Chart (D-1)** - Complete birth chart with planetary positions in 12 signs
 - **Navamsa Chart (D-9)** - Divisional chart for marriage & spiritual analysis
-- **SVG Chart Rendering** - Beautiful North Indian chart style
-- **High Precision** - Swiss Ephemeris for accurate astronomical calculations
+- **9 Planets** - Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu
+- **12 Houses** - House cusps with lords and planets in each house
+- **27 Nakshatras** - Full nakshatra calculation with pada and lord
+- **Ascendant** - Lagna calculation with sign and nakshatra
+- **Retrograde Planets** - Detects and marks retrograde planets
+- **SVG Chart Rendering** - Beautiful North Indian & South Indian styles
+- **Swiss Ephemeris** - NASA-grade astronomical calculations
 - **Vedic Astrology** - Whole Sign houses, Lahiri Ayanamsa
-- **Customizable** - Colors, symbols, layouts
+- **Customizable** - Colors, symbols, themes, layouts
 - **TypeScript** - Full type definitions included
 
 ## Installation
@@ -28,7 +33,7 @@ npm install vedic-calc
 ## Quick Start
 
 ```typescript
-import { generateRasiChart, generateNorthIndianChartSVG } from 'kundali-charts';
+import { generateRasiChart, generateNorthIndianChartSVG } from 'vedic-calc';
 
 // Generate birth chart
 const chart = generateRasiChart(
@@ -38,11 +43,41 @@ const chart = generateRasiChart(
   'Asia/Kolkata'  // Timezone
 );
 
+// Get Kundali Details
+console.log('=== Birth Chart Details ===');
+console.log('Ascendant:', chart.ascendant.signName, chart.ascendant.nakshatra);
+console.log('Moon Sign:', chart.planets[1].signName);
+
+// All Planets
+chart.planets.forEach(p => {
+  console.log(`${p.planet}: ${p.signName} ${p.degreeInSign.toFixed(2)}° (${p.nakshatra} ${p.nakshatraPada})`);
+});
+
+// Houses
+chart.houses.forEach(h => {
+  console.log(`House ${h.number} (${h.signName}): Lord ${h.lord}, Planets: ${h.planets.join(', ') || 'None'}`);
+});
+
 // Generate SVG chart
 const svg = generateNorthIndianChartSVG(chart, { showTable: true });
 
 // Save to file or display
 console.log(svg);
+```
+
+**Sample Output:**
+```
+=== Birth Chart Details ===
+Ascendant: Virgo Hasta
+Moon Sign: Taurus
+
+Sun: Taurus 14.22° (Rohini 2)
+Moon: Taurus 3.56° (Krittika 3)
+Mars: Cancer 28.41° (Ashlesha 4)
+...
+House 1 (Virgo): Lord Mercury, Planets: Moon
+House 2 (Libra): Lord Venus, Planets: 
+...
 ```
 
 ## API Reference
@@ -150,7 +185,7 @@ const svg = generateSouthIndianChartSVG(chart, {
 ### Available Themes
 
 ```typescript
-import { PREBUILT_THEMES } from 'kundali-charts';
+import { PREBUILT_THEMES } from 'vedic-calc';
 
 // Use predefined themes
 const svg = generateNorthIndianChartSVG(chart, {
@@ -169,7 +204,7 @@ const svg = generateNorthIndianChartSVG(chart, {
 ### Constants
 
 ```typescript
-import { Planet, Sign, Nakshatras } from 'kundali-charts';
+import { Planet, Sign, Nakshatras } from 'vedic-calc';
 
 // Planets
 Planet.SUN   // 0
@@ -192,7 +227,7 @@ Sign.GEMINI    // 2
 ## Example: Complete Kundali with Chart
 
 ```typescript
-import { generateRasiChart, generateNavamsaChart, generateNorthIndianChartSVG } from 'kundali-charts';
+import { generateRasiChart, generateNavamsaChart, generateNorthIndianChartSVG } from 'vedic-calc';
 
 // Birth details
 const date = new Date('1990-04-29T21:15:00+05:30');

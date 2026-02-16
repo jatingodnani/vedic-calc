@@ -34,7 +34,7 @@
   "type": "commonjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jatingodnani/kundali-charts"
+    "url": "https://github.com/jatingodnani/vedic-calc"
   },
   "engines": {
     "node": ">=16.0.0"

@@ -1,5 +1,5 @@
 ---
-title: Kundali Charts - Vedic Astrology Chart SDK
+title: Vedic Calc - Vedic Astrology Chart SDK
 description: Generate Rasi (D-1), Navamsa (D-9) charts with SVG rendering using Swiss Ephemeris. High-precision Vedic Astrology library for JavaScript/TypeScript.
 keywords:
   - vedic astrology
@@ -17,14 +17,14 @@ keywords:
 # Vedic Calc SDK
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/kundali-charts">
-    <img src="https://img.shields.io/npm/v/kundali-charts.svg" alt="npm version" />
+  <a href="https://www.npmjs.com/package/vedic-calc">
+    <img src="https://img.shields.io/npm/v/vedic-calc.svg" alt="npm version" />
   </a>
-  <a href="https://www.npmjs.com/package/kundali-charts">
-    <img src="https://img.shields.io/npm/dm/kundali-charts.svg" alt="npm downloads" />
+  <a href="https://www.npmjs.com/package/vedic-calc">
+    <img src="https://img.shields.io/npm/dm/vedic-calc.svg" alt="npm downloads" />
   </a>
-  <a href="https://github.com/jatingodnani/kundali-charts/blob/main/LICENSE">
-    <img src="https://img.shields.io/npm/l/kundali-charts.svg" alt="MIT License" />
+  <a href="https://github.com/jatingodnani/vedic-calc/blob/main/LICENSE">
+    <img src="https://img.shields.io/npm/l/vedic-calc.svg" alt="MIT License" />
   </a>
   <img src="https://img.shields.io/badge/TypeScript-5.x-blue.svg" alt="TypeScript" />
  High</p>
@@ -56,7 +56,7 @@ Kundali Charts is a powerful TypeScript/JavaScript library for generating Vedic 
 ### Generate a Rasi Chart
 
 ```typescript
-import { generateRasiChart } from 'kundali-charts';
+import { generateRasiChart } from 'vedic-calc';
 
 const chart = generateRasiChart(
   new Date('1990-04-29T21:15:00+05:30'),  // Date of birth
@@ -93,7 +93,7 @@ npm install vedic-calc
 Or with yarn:
 
 ```bash
-yarn add kundali-charts
+yarn add vedic-calc
 ```
 
 ## Supported Chart Types
@@ -129,7 +129,7 @@ yarn add kundali-charts
 
 ## License
 
-MIT License - see [LICENSE](https://github.com/jatingodnani/kundali-charts/blob/main/LICENSE) for details.
+MIT License - see [LICENSE](https://github.com/jatingodnani/vedic-calc/blob/main/LICENSE) for details.
 
 ## Related Packages
 
