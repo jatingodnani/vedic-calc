@@ -1,0 +1,56 @@
+{
+  "name": "vedic-calc",
+  "version": "1.0.3",
+  "description": "Vedic Astrology Chart SDK - Generate Rasi & Navamsa charts with SVG rendering",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "ephe/**/*",
+    "docs/**/*"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "vedic",
+    "astrology",
+    "kundali",
+    "jyotish",
+    "horoscope",
+    "chart",
+    "rasi",
+    "navamsa",
+    "swisseph"
+  ],
+  "author": "Jatin Godnani",
+  "license": "MIT",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jatingodnani/kundali-charts"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "swisseph": "^0.5.17"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.10",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "overrides": {
+    "tar": "^7.5.6",
+    "cacache": "^18.0.4",
+    "make-fetch-happen": "^14.0.0",
+    "node-gyp": "^10.3.1"
+  }
+}
