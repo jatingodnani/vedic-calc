@@ -62,7 +62,7 @@ Most astrology libraries are either Western-focused, inaccurate, or lack develop
 ## Features
 
 | Feature | Details |
-|---|---|
+|-------------------------|--------------------------------------------------------------|
 | **Rasi Chart (D-1)** | Complete birth chart with all 9 planets in 12 signs |
 | **Navamsa Chart (D-9)** | Divisional chart for marriage & spiritual analysis |
 | **9 Planets** | Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu |
@@ -141,7 +141,7 @@ KETU:    Leo     18.55 | Purva Phalguni P 1 | House 12
 ## Core Concepts
 
 | Term | Meaning |
-|---|---|
+|------------------------|----------------------------------------------------------------------------|
 | **Rasi (D-1)** | The main birth chart — shows planetary positions at the time of birth |
 | **Navamsa (D-9)** | A divisional chart — each sign is divided into 9 parts; used for marriage & dharma |
 | **Lagna (Ascendant)** | The rising sign at the time of birth — the most important point in the chart |
@@ -172,7 +172,7 @@ const { rasi, navamsa } = generateKundali(
 ```
 
 | Parameter | Type | Required | Description |
-|---|---|---|---|
+|---------------------|----------|----------|--------------------------------------------------------------|
 | `date` | `Date` | Yes | Birth date and time (use the local time with timezone offset) |
 | `latitude` | `number` | Yes | Geographic latitude (-90 to +90) |
 | `longitude` | `number` | Yes | Geographic longitude (-180 to +180) |
@@ -236,7 +236,7 @@ const svg = generateNorthIndianChartSVG(rasi, {
 ```
 
 | Option | Type | Default | Description |
-|---|---|---|---|
+|--------------|---------------------|---------|-------------------------------|
 | `showTable` | `boolean` | `true` | Show planet details table |
 | `layout` | `'row' \| 'column'` | `'row'` | Table position relative to chart |
 | `width` | `number` | `400` | Chart SVG width in pixels |
