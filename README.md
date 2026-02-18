@@ -686,7 +686,7 @@ Please check the [open issues](https://github.com/jatingodnani/vedic-calc/issues
 
 ## License
 
-[MIT](LICENSE) &copy; [Jatin Godnani](https://github.com/jatingodnani)
+[MIT](LICENSE)
 
 ---
 

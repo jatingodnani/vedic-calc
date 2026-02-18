@@ -1,8 +1,9 @@
 ---
 title: API Reference - Vedic Calc
-description: Complete API documentation for Kundali Charts SDK - generateRasiChart, generateNavamsaChart, SVG chart generation functions.
+description: Complete API documentation for Vedic Calc SDK - generateKundali, generateRasiChart, generateNavamsaChart, SVG chart generation functions.
 keywords:
   - kundali charts api
+  - generateKundali
   - generateRasiChart
   - generateNavamsaChart
   - svg renderer
@@ -14,73 +15,9 @@ keywords:
 
 ## Chart Generation
 
-### generateRasiChart
-
-Generates a complete Rasi (D-1) birth chart with planetary positions.
-
-```typescript
-function generateRasiChart(
-  date: Date,
-  latitude: number,
-  longitude: number,
-  timezone?: string,
-  nodeType?: NodeType
-): BirthChart
-```
-
-**Parameters:**
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `date` | `Date` | Yes | Date and time of birth |
-| `latitude` | `number` | Yes | Birth place latitude (-90 to 90) |
-| `longitude` | `number` | Yes | Birth place longitude (-180 to 180) |
-| `timezone` | `string` | No | IANA timezone (default: "UTC") |
-| `nodeType` | `NodeType` | No | Rahu/Ketu node type (default: Mean) |
-
-**Returns:** `BirthChart`
-
-**Example:**
-
-```typescript
-const chart = generateRasiChart(
-  new Date('1990-04-29T21:15:00+05:30'),
-  16.544893,  // Latitude
-  81.521240,  // Longitude
-  'Asia/Kolkata'
-);
-```
-
----
-
-### generateNavamsaChart
-
-Generates Navamsa (D-9) divisional chart from Rasi chart.
-
-```typescript
-function generateNavamsaChart(rasiChart: BirthChart): BirthChart
-```
-
-**Parameters:**
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `rasiChart` | `BirthChart` | Yes | Rasi chart from `generateRasiChart` |
-
-**Returns:** `BirthChart`
-
-**Example:**
-
-```typescript
-const rasi = generateRasiChart(date, lat, lon, tz);
-const navamsa = generateNavamsaChart(rasi);
-```
-
----
-
 ### generateKundali
 
-Generates both Rasi (D-1) and Navamsa (D-9) charts in one call.
+The **all-in-one** function. Generates both Rasi (D-1) and Navamsa (D-9) charts in a single call.
 
 ```typescript
 function generateKundali(
@@ -96,23 +33,98 @@ function generateKundali(
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `date` | `Date` | Yes | Date and time of birth |
-| `latitude` | `number` | Yes | Birth place latitude (-90 to 90) |
-| `longitude` | `number` | Yes | Birth place longitude (-180 to 180) |
-| `timezone` | `string` | No | IANA timezone (default: "UTC") |
-| `options.nodeType` | `NodeType` | No | Rahu/Ketu node type |
+| `date` | `Date` | Yes | Birth date and time (use local time with timezone offset) |
+| `latitude` | `number` | Yes | Geographic latitude (-90 to +90) |
+| `longitude` | `number` | Yes | Geographic longitude (-180 to +180) |
+| `timezone` | `string` | No | IANA timezone string (default: `'UTC'`) |
+| `options.nodeType` | `NodeType` | No | `TRUE_NODE` or `MEAN_NODE` for Rahu/Ketu (default: `TRUE_NODE`) |
 
-**Returns:** `{ rasi: RasiChart; navamsa: NavamsaChart }`
+**Returns:** `{ rasi: RasiChart, navamsa: NavamsaChart }`
 
 **Example:**
 
 ```typescript
+import { generateKundali, NodeType } from 'vedic-calc';
+
 const { rasi, navamsa } = generateKundali(
   new Date('1990-04-29T21:15:00+05:30'),
-  16.544893,
-  81.521240,
+  16.5449,
+  81.5212,
+  'Asia/Kolkata',
+  { nodeType: NodeType.TRUE_NODE } // optional
+);
+```
+
+---
+
+### generateRasiChart
+
+Generates only the Rasi (D-1) birth chart with planetary positions.
+
+```typescript
+function generateRasiChart(
+  date: Date,
+  latitude: number,
+  longitude: number,
+  timezone?: string,
+  nodeType?: NodeType
+): RasiChart
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `date` | `Date` | Yes | Date and time of birth |
+| `latitude` | `number` | Yes | Birth place latitude (-90 to +90) |
+| `longitude` | `number` | Yes | Birth place longitude (-180 to +180) |
+| `timezone` | `string` | No | IANA timezone (default: `'UTC'`) |
+| `nodeType` | `NodeType` | No | Rahu/Ketu node type (default: `TRUE_NODE`) |
+
+**Returns:** `RasiChart`
+
+**Example:**
+
+```typescript
+import { generateRasiChart } from 'vedic-calc';
+
+const chart = generateRasiChart(
+  new Date('1990-04-29T21:15:00+05:30'),
+  16.5449,  // Latitude
+  81.5212,  // Longitude
   'Asia/Kolkata'
 );
+```
+
+---
+
+### generateNavamsaChart
+
+Generates the Navamsa (D-9) divisional chart from an existing Rasi chart.
+
+```typescript
+function generateNavamsaChart(rasiChart: RasiChart): NavamsaChart
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `rasiChart` | `RasiChart` | Yes | Rasi chart from `generateRasiChart` or `generateKundali` |
+
+**Returns:** `NavamsaChart`
+
+**Example:**
+
+```typescript
+import { generateRasiChart, generateNavamsaChart, Planet } from 'vedic-calc';
+
+const rasi = generateRasiChart(date, lat, lon, tz);
+const navamsa = generateNavamsaChart(rasi);
+
+navamsa.planets.forEach(p => {
+  console.log(`${Planet[p.planet]}: Navamsa Sign ${p.navamsaSignName}, House ${p.navamsaHouse}`);
+});
 ```
 
 ---
@@ -145,11 +157,11 @@ const navamsaSign = calculateNavamsaSign(125.5); // Returns Sign
 
 ### generateNorthIndianChartSVG
 
-Generates North Indian style chart (diamond grid layout).
+Generates a **North Indian diamond-grid** style SVG chart.
 
 ```typescript
 function generateNorthIndianChartSVG(
-  chart: BirthChart,
+  chart: RasiChart,
   options?: NorthIndianOptions
 ): string
 ```
@@ -158,108 +170,39 @@ function generateNorthIndianChartSVG(
 
 ```typescript
 interface NorthIndianOptions {
-  showTable?: boolean;        // Show planet details table
-  layout?: 'row' | 'column';  // Table layout
+  showTable?: boolean;       // Show planet details table (default: true)
+  layout?: 'row' | 'column'; // Table position: beside or below chart (default: 'row')
   title?: string;            // Chart title
-  width?: number;            // Chart width in pixels
-  height?: number;           // Chart height in pixels
-  showSignGlyphs?: boolean;  // Show zodiac symbols (♈♉♊)
-  showSignNumbers?: boolean; // Show sign numbers (1-12)
-  showDegrees?: boolean;     // Show planet degrees
+  width?: number;            // Chart width in pixels (default: 400)
+  height?: number;           // Chart height in pixels (default: 300)
+  tableWidth?: number;       // Planet table width in pixels (default: 520)
   customConfig?: ChartConfig; // Custom styling
 }
 ```
 
+**Options table:**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `showTable` | `boolean` | `true` | Show planet details table |
+| `layout` | `'row' \| 'column'` | `'row'` | Table position relative to chart |
+| `width` | `number` | `400` | Chart SVG width in pixels |
+| `height` | `number` | `300` | Chart SVG height in pixels |
+| `tableWidth` | `number` | `520` | Planet table width in pixels |
+
+**Returns:** `string` — a complete inline SVG string ready to embed in HTML or save as `.svg`.
+
 **Example:**
 
 ```typescript
+import { generateNorthIndianChartSVG } from 'vedic-calc';
+
 const svg = generateNorthIndianChartSVG(chart, {
   showTable: true,
   layout: 'row',
-  title: 'My Kundali',
   width: 400,
   height: 300,
-  showSignGlyphs: true,
-  showSignNumbers: true,
-  showDegrees: true,
-  customConfig: {
-    colors: {
-      background: '#FFFFFF',
-      border: '#422762',
-      innerLines: '#422762',
-      signNumber: '#422762',
-      text: '#1A1A2E',
-      retrograde: '#D63031',
-    }
-  }
-});
-```
-
----
-
-### generateSouthIndianChartSVG
-
-Generates South Indian style chart (3x4 grid layout).
-
-```typescript
-function generateSouthIndianChartSVG(
-  chart: BirthChart,
-  options?: SouthIndianOptions
-): string
-```
-
-**Options:**
-
-```typescript
-interface SouthIndianOptions {
-  showTable?: boolean;        // Show planet details table
-  showSignGlyphs?: boolean;  // Show zodiac symbols
-  showSignNumbers?: boolean; // Show sign numbers
-  showDegrees?: boolean;     // Show planet degrees
-  cellWidth?: number;        // Cell width
-  cellHeight?: number;       // Cell height
-  title?: string;            // Chart title
-  customConfig?: ChartConfig; // Custom styling
-}
-```
-
-**Example:**
-
-```typescript
-const svg = generateSouthIndianChartSVG(chart, {
-  showTable: true,
-  showSignGlyphs: true,
-  cellWidth: 150,
-  cellHeight: 100,
-  title: 'My Kundali'
-});
-```
-
----
-
-### PREBUILT_THEMES
-
-Pre-defined color themes for charts.
-
-```typescript
-const PREBUILT_THEMES: {
-  light: ChartTheme;
-  dark: ChartTheme;
-  ocean: ChartTheme;
-  forest: ChartTheme;
-  golden: ChartTheme;
-}
-```
-
-**Example:**
-
-```typescript
-import { generateNorthIndianChartSVG, PREBUILT_THEMES } from 'vedic-calc';
-
-const svg = generateNorthIndianChartSVG(chart, {
-  customConfig: {
-    colors: PREBUILT_THEMES.dark.colors
-  }
+  tableWidth: 520,
 });
 ```
 
@@ -304,15 +247,15 @@ function calculateHouseCusps(
 
 ```typescript
 enum Planet {
-  SUN = 0,
-  MOON = 1,
-  MARS = 2,
+  SUN     = 0,
+  MOON    = 1,
+  MARS    = 2,
   MERCURY = 3,
   JUPITER = 4,
-  VENUS = 5,
-  SATURN = 6,
-  RAHU = 7,
-  KETU = 8
+  VENUS   = 5,
+  SATURN  = 6,
+  RAHU    = 7,
+  KETU    = 8
 }
 ```
 
@@ -320,18 +263,37 @@ enum Planet {
 
 ```typescript
 enum Sign {
-  ARIES = 0,
-  TAURUS = 1,
-  GEMINI = 2,
-  CANCER = 3,
-  LEO = 4,
-  VIRGO = 5,
-  LIBRA = 6,
-  SCORPIO = 7,
+  ARIES       = 0,
+  TAURUS      = 1,
+  GEMINI      = 2,
+  CANCER      = 3,
+  LEO         = 4,
+  VIRGO       = 5,
+  LIBRA       = 6,
+  SCORPIO     = 7,
   SAGITTARIUS = 8,
-  CAPRICORN = 9,
-  AQUARIUS = 10,
-  PISCES = 11
+  CAPRICORN   = 9,
+  AQUARIUS    = 10,
+  PISCES      = 11
+}
+```
+
+### NodeType
+
+```typescript
+enum NodeType {
+  TRUE_NODE, // Precise astronomical position (default)
+  MEAN_NODE  // Smoothed/traditional position
+}
+```
+
+### AyanamsaSystem
+
+```typescript
+enum AyanamsaSystem {
+  LAHIRI,       // Chitrapaksha — most popular in India (default)
+  RAMAN,        // Used in South India
+  KRISHNAMURTI  // KP System
 }
 ```
 
@@ -352,60 +314,73 @@ const Nakshatras: string[] = [
 
 ## Return Types
 
-### BirthChart
+### RasiChart
 
 ```typescript
-interface BirthChart {
+interface RasiChart {
   birthData: {
     date: Date;
     latitude: number;
     longitude: number;
     timezone: string;
   };
-  
+
   ascendant: {
-    degree: number;
+    degree: number;        // Sidereal degree (0-360)
+    sign: Sign;            // Sign enum value (0-11)
+    signName: string;      // e.g. "Virgo"
+    nakshatra: string;     // e.g. "Hasta"
+    nakshatraPada: number; // 1-4
+  };
+
+  planets: PlanetData[];
+
+  houses: {
+    number: number;        // 1-12
     sign: Sign;
     signName: string;
-    nakshatra: string;
-    nakshatraPada: number;
+    lord: string;          // e.g. "Mercury"
+    planets: Planet[];     // Planets in this house
+    cuspStart: number;     // Start degree (0-360)
+    cuspEnd: number;       // End degree (0-360)
+  }[];
+
+  ayanamsa: number;        // Lahiri ayanamsa value used
+}
+```
+
+### NavamsaChart
+
+```typescript
+interface NavamsaChart {
+  planets: {
+    planet: Planet;
+    navamsaSign: Sign;
+    navamsaSignName: string;
+    navamsaHouse: number;  // 1-12
+    longitude: number;
+  }[];
+  ascendantNavamsa: {
+    sign: Sign;
+    signName: string;
+    longitude: number;
   };
-  
-  planets: PlanetPosition[];
-  
-  houses: House[];
-  
-  ayanamsa: number;
 }
 ```
 
-### PlanetPosition
+### PlanetData
 
 ```typescript
-interface PlanetPosition {
+interface PlanetData {
   planet: Planet;
-  longitude: number;
+  longitude: number;       // Sidereal longitude (0-360)
   sign: Sign;
   signName: string;
-  degreeInSign: number;
+  degreeInSign: number;    // Degree within the sign (0-30)
   nakshatra: string;
-  nakshatraPada: number;
-  nakshatraLord: string;
-  house: number;
+  nakshatraPada: number;   // 1-4
+  nakshatraLord: string;   // e.g. "Moon"
+  house: number;           // 1-12
   isRetrograde: boolean;
-}
-```
-
-### House
-
-```typescript
-interface House {
-  number: number;
-  sign: Sign;
-  signName: string;
-  lord: string;
-  planets: Planet[];
-  cuspStart: number;
-  cuspEnd: number;
 }
 ```

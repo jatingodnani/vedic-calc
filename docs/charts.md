@@ -1,10 +1,9 @@
 ---
-title: Chart Rendering - Vedic Astro
-description: Learn how to customize SVG charts with themes, colors, layouts, and styling options in Kundali Charts SDK.
+title: Chart Rendering - Vedic Calc
+description: Learn how to customize SVG charts with themes, colors, layouts, and styling options in Vedic Calc SDK.
 keywords:
   - svg chart rendering
   - north indian chart
-  - south indian chart
   - chart customization
   - chart themes
   - kundali visualization
@@ -12,33 +11,25 @@ keywords:
 
 # Chart Rendering
 
-Kundali Charts provides two SVG chart styles: North Indian and South Indian. Both can be extensively customized.
+Vedic Calc provides a North Indian diamond-grid SVG chart style that can be extensively customized.
 
-## Chart Styles
+## Chart Style
 
 ### North Indian Chart
 
-The North Indian chart uses a diamond grid layout, common in North India.
+The North Indian chart uses a diamond grid layout, common in North India. It is generated as a complete inline SVG string ready to embed in HTML or save as a `.svg` file.
 
 ```typescript
 import { generateRasiChart, generateNorthIndianChartSVG } from 'vedic-calc';
 
-const chart = generateRasiChart(date, lat, lon, tz);
+const chart = generateRasiChart(
+  new Date('1990-04-29T21:15:00+05:30'),
+  16.5449,
+  81.5212,
+  'Asia/Kolkata'
+);
 
 const svg = generateNorthIndianChartSVG(chart, {
-  showTable: true,
-  title: 'My Birth Chart'
-});
-```
-
-### South Indian Chart
-
-The South Indian chart uses a 3x4 grid layout, common in South India.
-
-```typescript
-import { generateSouthIndianChartSVG } from 'vedic-calc';
-
-const svg = generateSouthIndianChartSVG(chart, {
   showTable: true,
   title: 'My Birth Chart'
 });
@@ -46,86 +37,51 @@ const svg = generateSouthIndianChartSVG(chart, {
 
 ## Customization Options
 
-### Basic Options
-
 ```typescript
-const options = {
-  // Display options
-  showTable: true,        // Show/hide planet table
-  showSignGlyphs: true,   // Show ♈♉♊ symbols
-  showSignNumbers: true,  // Show 1-12 numbers
-  showDegrees: true,      // Show planet degrees
-  
-  // Layout
+const svg = generateNorthIndianChartSVG(chart, {
+  showTable: true,        // Show/hide planet details table (default: true)
+  layout: 'row',          // 'row' (table beside chart) | 'column' (table below)
   title: 'My Kundali',    // Chart title
-  width: 400,            // Chart width
-  height: 300,          // Chart height
-  
-  // South Indian only
-  cellWidth: 150,        // Cell width
-  cellHeight: 100       // Cell height
-};
+  width: 400,             // Chart width in pixels (default: 400)
+  height: 300,            // Chart height in pixels (default: 300)
+  tableWidth: 520,        // Planet table width in pixels (default: 520)
+});
+```
+
+### Chart Layout Modes
+
+**Row layout** (default) — table appears to the right of the chart:
+
+```
++----------+ +-------------------------+
+|  Chart   | |     Planet Table        |
++----------+ +-------------------------+
+```
+
+**Column layout** — table appears below the chart:
+
+```
++----------+
+|  Chart   |
++----------+
++--------------------------------------+
+|            Planet Table              |
++--------------------------------------+
 ```
 
 ### Color Customization
 
 ```typescript
-const customConfig = {
-  colors: {
-    background: '#FFFFFF',    // Chart background
-    border: '#422762',        // Outer border
-    innerLines: '#422762',    // Grid lines
-    signNumber: '#422762',    // Sign numbers
-    text: '#1A1A2E',          // Main text
-    retrograde: '#D63031',   // Retrograde planets
-  }
-};
-
-const svg = generateNorthIndianChartSVG(chart, {
-  customConfig
-});
-```
-
-## Pre-built Themes
-
-### Dark Theme
-
-```typescript
-import { PREBUILT_THEMES } from 'vedic-calc';
-
 const svg = generateNorthIndianChartSVG(chart, {
   customConfig: {
-    colors: PREBUILT_THEMES.dark.colors
-  }
-});
-```
-
-### Ocean Theme
-
-```typescript
-const svg = generateNorthIndianChartSVG(chart, {
-  customConfig: {
-    colors: PREBUILT_THEMES.ocean.colors
-  }
-});
-```
-
-### Forest Theme
-
-```typescript
-const svg = generateNorthIndianChartSVG(chart, {
-  customConfig: {
-    colors: PREBUILT_THEMES.forest.colors
-  }
-});
-```
-
-### Golden Theme
-
-```typescript
-const svg = generateNorthIndianChartSVG(chart, {
-  customConfig: {
-    colors: PREBUILT_THEMES.golden.colors
+    colors: {
+      background: '#FFFFFF',    // Chart background
+      border: '#422762',        // Outer border
+      innerLines: '#422762',    // Grid lines
+      signNumber: '#422762',    // Sign numbers
+      text: '#1A1A2E',          // Main text
+      retrograde: '#D63031',    // Retrograde planets (red)
+    }
   }
 });
 ```
@@ -133,38 +89,24 @@ const svg = generateNorthIndianChartSVG(chart, {
 ## Complete Example
 
 ```typescript
-import { 
-  generateRasiChart, 
+import {
+  generateRasiChart,
   generateNorthIndianChartSVG
 } from 'vedic-calc';
 
 const chart = generateRasiChart(
   new Date('1990-04-29T21:15:00+05:30'),
-  16.544893,
-  81.521240,
+  16.5449,
+  81.5212,
   'Asia/Kolkata'
 );
 
 // Generate SVG chart
 const svg = generateNorthIndianChartSVG(chart, {
   showTable: true,
+  layout: 'row',
   width: 500,
   height: 400,
-});
-
-// Embed in HTML
-const container = document.getElementById('kundali');
-container.innerHTML = svg;
-```
-    colors: {
-      background: '#1a1a2e',
-      border: '#e94560',
-      innerLines: '#e94560',
-      signNumber: '#e94560',
-      text: '#ffffff',
-      retrograde: '#ff6b6b',
-    }
-  }
 });
 
 // Embed in HTML
@@ -176,8 +118,9 @@ container.innerHTML = svg;
 
 ```html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Kundali Chart</title>
   <style>
     body {
@@ -186,52 +129,45 @@ container.innerHTML = svg;
       align-items: center;
       min-height: 100vh;
       margin: 0;
-      background: #f5f5f5;
+      background: #f5f0ff;
     }
     .chart-container {
       background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(66, 39, 98, 0.15);
     }
   </style>
 </head>
 <body>
   <div class="chart-container" id="kundali"></div>
-  
+
   <script type="module">
     import { generateRasiChart, generateNorthIndianChartSVG } from 'vedic-calc';
-    
+
     const chart = generateRasiChart(
       new Date('1990-04-29T21:15:00+05:30'),
-      16.544893,
-      81.521240,
+      16.5449,
+      81.5212,
       'Asia/Kolkata'
     );
-    
+
     const svg = generateNorthIndianChartSVG(chart, {
       showTable: true,
-      title: 'My Birth Chart'
+      title: 'My Birth Chart',
+      width: 450,
+      height: 350,
     });
-    
+
     document.getElementById('kundali').innerHTML = svg;
   </script>
 </body>
 </html>
 ```
 
-## Chart Comparison
-
-| Feature | North Indian | South Indian |
-|---------|--------------|--------------|
-| Layout | Diamond grid | 3x4 grid |
-| Best for | Quick overview | Detailed view |
-| Table position | Side | Bottom |
-| Default orientation | - | Signs 1-12 left to right |
-
 ## Tips
 
-1. **Use appropriate size** - Set width/height based on where you'll display
-2. **Choose right style** - North Indian for overview, South Indian for details
-3. **Theme matching** - Match chart theme to your app's design
-4. **Show/hide elements** - Customize what information to display
+1. **Use appropriate size** - Set `width`/`height` based on where you'll display the chart
+2. **Layout choice** - Use `'row'` for wide containers, `'column'` for narrow/mobile layouts
+3. **Color customization** - Match the chart colors to your app's design system
+4. **Show/hide elements** - Use `showTable` to control whether the planet details table is shown

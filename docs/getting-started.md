@@ -27,44 +27,65 @@ npm install vedic-calc
 yarn add vedic-calc
 ```
 
+### Using pnpm
+
+```bash
+pnpm add vedic-calc
+```
+
+> **Requirements:** Node.js >= 16.0.0
+
 ## Basic Usage
 
-### Step 1: Generate a Rasi Chart
+### Step 1: Generate a Kundali
 
-The Rasi chart is the main birth chart in Vedic Astrology. Here's how to generate one:
+The easiest way to get started is with `generateKundali` — it returns both the Rasi and Navamsa charts in one call:
 
 ```typescript
-import { generateRasiChart } from 'vedic-calc';
+import { generateKundali, Planet } from 'vedic-calc';
 
 // Your birth details
-const dateOfBirth = new Date('1990-04-29T21:15:00+05:30');
-const latitude = 16.544893;    // Example: Vijayawada, India
-const longitude = 81.521240;
-const timezone = 'Asia/Kolkata';
-
-// Generate the chart
-const chart = generateRasiChart(
-  dateOfBirth,
-  latitude,
-  longitude,
-  timezone
+const { rasi, navamsa } = generateKundali(
+  new Date('1990-04-29T21:15:00+05:30'), // Date & time of birth
+  16.5449,                                // Latitude (e.g. Vijayawada, India)
+  81.5212,                                // Longitude
+  'Asia/Kolkata'                          // IANA timezone
 );
 ```
 
 ### Step 2: Access Planetary Positions
 
 ```typescript
-// Get ascendant
-console.log('Ascendant:', chart.ascendant.signName); // "Virgo"
-console.log('Ascendant Nakshatra:', chart.ascendant.nakshatra); // "Hasta"
+// Get ascendant (Lagna)
+console.log('Ascendant:', rasi.ascendant.signName);           // e.g. "Virgo"
+console.log('Ascendant Nakshatra:', rasi.ascendant.nakshatra); // e.g. "Hasta"
+console.log('Pada:', rasi.ascendant.nakshatraPada);            // 1-4
 
 // Get Moon sign (planet index 1 = Moon)
-console.log('Moon Sign:', chart.planets[1].signName);
+console.log('Moon Sign:', rasi.planets[1].signName);
 
-// List all planets with their signs
-chart.planets.forEach(planet => {
-  console.log(`${planet.planet}: ${planet.signName} ${planet.degreeInSign.toFixed(2)}°`);
+// List all planets with their signs and degrees
+rasi.planets.forEach(planet => {
+  const retro = planet.isRetrograde ? ' (R)' : '';
+  console.log(
+    `${Planet[planet.planet]}: ${planet.signName} ${planet.degreeInSign.toFixed(2)}° | ` +
+    `${planet.nakshatra} Pada ${planet.nakshatraPada} | House ${planet.house}${retro}`
+  );
 });
+```
+
+**Sample Output:**
+```
+Ascendant: Virgo (Hasta Pada 2)
+SUN:     Taurus  14.22 | Rohini Pada 2      | House 9
+MOON:    Taurus   3.56 | Krittika Pada 3    | House 9
+MARS:    Cancer  28.41 | Ashlesha Pada 4    | House 11
+MERCURY: Aries   28.10 | Krittika Pada 1    | House 8
+JUPITER: Cancer   9.88 | Pushya Pada 2      | House 11
+VENUS:   Pisces  22.34 | Revati Pada 3      | House 7
+SATURN:  Capricorn 4.12| Uttara Ashadha P 2 | House 5
+RAHU:    Aquarius 18.55| Shatabhisha Pada 1 | House 6
+KETU:    Leo     18.55 | Purva Phalguni P 1 | House 12
 ```
 
 ### Step 3: Generate SVG Chart
@@ -73,9 +94,9 @@ chart.planets.forEach(planet => {
 import { generateNorthIndianChartSVG } from 'vedic-calc';
 
 // Generate North Indian style chart
-const svg = generateNorthIndianChartSVG(chart, {
+const svg = generateNorthIndianChartSVG(rasi, {
   showTable: true,
-  title: 'My Birth Chart',
+  layout: 'row',
   width: 400,
   height: 300
 });
@@ -84,80 +105,97 @@ const svg = generateNorthIndianChartSVG(chart, {
 document.getElementById('chart-container')!.innerHTML = svg;
 ```
 
+## Core Concepts
+
+| Term | Meaning |
+|------|---------|
+| **Rasi (D-1)** | The main birth chart — shows planetary positions at the time of birth |
+| **Navamsa (D-9)** | A divisional chart — each sign is divided into 9 parts; used for marriage & dharma |
+| **Lagna (Ascendant)** | The rising sign at the time of birth — the most important point in the chart |
+| **Nakshatra** | One of 27 lunar mansions (each 13°20') — gives deeper insight than just the sign |
+| **Pada** | Each nakshatra is divided into 4 padas (quarters) of 3°20' each |
+| **Ayanamsa** | The difference between Tropical and Sidereal zodiacs (~24° currently) |
+| **Whole Sign Houses** | Traditional Vedic house system — each house = one complete zodiac sign |
+| **Retrograde** | A planet appearing to move backward — considered significant in Jyotish |
+
 ## Understanding the Chart Data
 
-The generated chart contains:
+The generated Rasi chart contains:
 
 ```typescript
-interface BirthChart {
+interface RasiChart {
   birthData: {
     date: Date;
     latitude: number;
     longitude: number;
     timezone: string;
   };
-  
+
   ascendant: {
-    degree: number;        // Longitude degree (0-360)
-    sign: Sign;           // Sign enum (0-11)
-    signName: string;     // "Aries", "Taurus", etc.
-    nakshatra: string;    // "Ashwini", "Bharani", etc.
+    degree: number;        // Sidereal degree (0-360)
+    sign: Sign;            // Sign enum value (0-11)
+    signName: string;      // e.g. "Virgo"
+    nakshatra: string;     // e.g. "Hasta"
     nakshatraPada: number; // 1-4
   };
-  
-  planets: PlanetPosition[];  // 9 planets
-  
-  houses: House[];            // 12 houses
-  
-  ayanamsa: number;          // Ayanamsa value
+
+  planets: PlanetData[];   // 9 planets
+
+  houses: {
+    number: number;        // 1-12
+    sign: Sign;
+    signName: string;
+    lord: string;          // e.g. "Mercury"
+    planets: Planet[];     // Planets in this house
+    cuspStart: number;     // Start degree (0-360)
+    cuspEnd: number;       // End degree (0-360)
+  }[];
+
+  ayanamsa: number;        // Lahiri ayanamsa value used
 }
 ```
 
 ## Generating Navamsa Chart
 
-Navamsa (D-9) is a divisional chart crucial for marriage analysis:
+Navamsa (D-9) is a divisional chart crucial for marriage analysis. You can generate it directly via `generateKundali`, or separately:
 
 ```typescript
-import { generateRasiChart, generateNavamsaChart, generateSouthIndianChartSVG } from 'vedic-calc';
+import { generateRasiChart, generateNavamsaChart } from 'vedic-calc';
 
 const rasi = generateRasiChart(
   new Date('1990-04-29T21:15:00+05:30'),
-  16.544893,
-  81.521240,
+  16.5449,
+  81.5212,
   'Asia/Kolkata'
 );
 
 // Generate Navamsa from Rasi
 const navamsa = generateNavamsaChart(rasi);
 
-// Render Navamsa chart
-const navamsaSVG = generateSouthIndianChartSVG(navamsa, {
-  showTable: true,
-  title: 'Navamsa Chart'
+console.log('Navamsa Lagna:', navamsa.ascendantNavamsa.signName);
+navamsa.planets.forEach(p => {
+  console.log(`${Planet[p.planet]}: Navamsa Sign ${p.navamsaSignName}, House ${p.navamsaHouse}`);
 });
 ```
 
 ## Complete Example
 
-Here's a complete example that generates both Rasi and Navamsa charts:
+Here's a complete example that generates both Rasi and Navamsa charts and renders them as SVG:
 
 ```typescript
-import { 
-  generateRasiChart, 
-  generateNavamsaChart, 
+import {
+  generateKundali,
   generateNorthIndianChartSVG,
-  generateSouthIndianChartSVG 
+  Planet
 } from 'vedic-calc';
 
 // Birth details
-const birthDate = new Date('1990-04-29T21:15:00+05:30');
-const latitude = 16.544893;
-const longitude = 81.521240;
-const timezone = 'Asia/Kolkata';
-
-// Generate charts
-const rasi = generateRasiChart(birthDate, latitude, longitude, timezone);
-const navamsa = generateNavamsaChart(rasi);
+const { rasi, navamsa } = generateKundali(
+  new Date('1990-04-29T21:15:00+05:30'),
+  16.5449,
+  81.5212,
+  'Asia/Kolkata'
+);
 
 // Display chart info
 console.log('=== Rasi Chart ===');
@@ -166,28 +204,32 @@ console.log('Moon:', rasi.planets[1].signName);
 console.log('Sun:', rasi.planets[0].signName);
 
 console.log('\n=== Navamsa Chart ===');
-console.log('Ascendant:', navamsa.ascendant.signName);
-console.log('Moon:', navamsa.planets[1].signName);
+console.log('Ascendant:', navamsa.ascendantNavamsa.signName);
+console.log('Moon Navamsa Sign:', navamsa.planets[1].navamsaSignName);
 
-// Generate SVG
-const rasiSVG = generateNorthIndianChartSVG(rasi, {
-  showTable: true,
-  title: 'Rasi Chart'
+// Planets in each house
+rasi.houses.forEach(house => {
+  if (house.planets.length > 0) {
+    const names = house.planets.map(p => Planet[p]).join(', ');
+    console.log(`House ${house.number} (${house.signName}): ${names} | Lord: ${house.lord}`);
+  }
 });
 
-const navamsaSVG = generateSouthIndianChartSVG(navamsa, {
+// Generate SVG
+const svg = generateNorthIndianChartSVG(rasi, {
   showTable: true,
-  title: 'Navamsa Chart'
+  layout: 'row',
+  width: 400,
+  height: 300
 });
 
 // Use in HTML
-document.getElementById('rasi')!.innerHTML = rasiSVG;
-document.getElementById('navamsa')!.innerHTML = navamsaSVG;
+document.getElementById('chart')!.innerHTML = svg;
 ```
 
 ## Finding Birth Coordinates
 
-You need latitude and longitude for birth place. Use:
+You need latitude and longitude for the birth place. Use:
 
 - [Google Maps](https://www.google.com/maps) - Right-click location → coordinates
 - [TimeAndDate](https://www.timeanddate.com) - Timezone lookup
@@ -196,5 +238,5 @@ You need latitude and longitude for birth place. Use:
 ## Next Steps
 
 - [API Reference](/docs/api-reference) - Complete function documentation
-- [Chart Customization](/docs/charts) - Themes, colors, layouts
+- [Chart Rendering](/docs/charts) - Themes, colors, layouts
 - [Code Examples](/docs/examples) - More usage examples
