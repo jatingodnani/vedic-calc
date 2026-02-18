@@ -1,6 +1,6 @@
 {
   "name": "vedic-calc",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Vedic Astrology Chart SDK - Generate Rasi & Navamsa charts with SVG rendering",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
