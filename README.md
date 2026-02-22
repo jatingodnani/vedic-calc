@@ -13,7 +13,7 @@
 </p>
 
 <p>
-  Generate <strong>Rasi (D-1)</strong> & <strong>Navamsa (D-9)</strong> charts &middot; <strong>9 Planets</strong> &middot; <strong>27 Nakshatras</strong> &middot; <strong>SVG Rendering</strong> &middot; <strong>Swiss Ephemeris precision</strong>
+  Generate <strong>Rasi (D-1)</strong> & <strong>Navamsa (D-9)</strong> charts &middot; <strong>Vimshottari Dasha</strong> Timeline &middot; <strong>9 Planets</strong> &middot; <strong>27 Nakshatras</strong> &middot; <strong>SVG Rendering</strong> &middot; <strong>Swiss Ephemeris precision</strong>
 </p>
 
 </div>
@@ -31,15 +31,17 @@
   - [generateKundali](#generatekundalidate-latitude-longitude-timezone-options)
   - [generateRasiChart](#generaterasichartdate-latitude-longitude-timezone-nodetype)
   - [generateNavamsaChart](#generatenavamsachartrasichart)
+  - [getVimshottariDasha](#getvimshottaridasharasi)
   - [generateNorthIndianChartSVG](#generatenorthindianchartssvgchart-options)
   - [Constants & Enums](#constants--enums)
 - [SVG Chart Options](#svg-chart-options)
 - [Usage Examples](#usage-examples)
   - [Basic Kundali](#1-basic-kundali)
-  - [Save SVG to File](#2-save-svg-to-file)
-  - [Embed in HTML](#3-embed-in-html)
-  - [Express.js API](#4-expressjs-api-endpoint)
-  - [Next.js / React](#5-nextjs--react)
+  - [Calculate Vimshottari Dasha](#2-calculate-vimshottari-dasha)
+  - [Save SVG to File](#3-save-svg-to-file)
+  - [Embed in HTML](#4-embed-in-html)
+  - [Express.js API](#5-expressjs-api-endpoint)
+  - [Next.js / React](#6-nextjs--react)
 - [TypeScript Types](#typescript-types)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
@@ -65,6 +67,7 @@ Most astrology libraries are either Western-focused, inaccurate, or lack develop
 |-------------------------|--------------------------------------------------------------|
 | **Rasi Chart (D-1)** | Complete birth chart with all 9 planets in 12 signs |
 | **Navamsa Chart (D-9)** | Divisional chart for marriage & spiritual analysis |
+| **Vimshottari Dasha** | Full 120-year chronological timeline & sub-periods |
 | **9 Planets** | Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu |
 | **12 Houses** | Whole Sign house system (traditional Vedic method) |
 | **27 Nakshatras** | Full nakshatra name, pada (1–4), and nakshatra lord |
@@ -219,6 +222,28 @@ navamsa.planets.forEach(p => {
 
 ---
 
+### `getVimshottariDasha(rasi)`
+
+Generates a complete 120-year timeline for a person natively calculating the Nakshatra Moon fractional balance at birth.
+
+```typescript
+import { getVimshottariDasha } from 'vedic-calc';
+
+const timeline = getVimshottariDasha(rasi);
+
+timeline.forEach(mahadasha => {
+  console.log(`Mahadasha: ${mahadasha.planet} | Ends: ${mahadasha.end.toDateString()}`);
+  
+  mahadasha.antardashas.forEach(ad => {
+     console.log(`  └─ Antardasha: ${ad.planet} | Ends: ${ad.end.toDateString()}`);
+  });
+});
+```
+
+**Returns:** `Mahadasha[]` — an array of `10` main planetary periods containing nested `antardasha` sub-periods.
+
+---
+
 ### `generateNorthIndianChartSVG(chart, options?)`
 
 Generates a **North Indian diamond-grid** style SVG chart.
@@ -364,7 +389,35 @@ rasi.houses.forEach(house => {
 
 ---
 
-### 2. Save SVG to File
+### 2. Calculate Vimshottari Dasha
+
+Trace an individual's astrological timeline using exactly 120 absolute years generated from their fractional Moon Nakshatra at the precise time of birth.
+
+```typescript
+import { generateKundali, getVimshottariDasha } from 'vedic-calc';
+
+const { rasi } = generateKundali(
+  new Date('2002-11-11T20:30:00+05:30'),
+  28.6139,
+  77.2090,
+  'Asia/Kolkata'
+);
+
+// Ask the SDK to calculate their 120-year timeline 
+const timeline = getVimshottariDasha(rasi);
+
+// Find their active period today
+const now = new Date();
+const currentMahadasha = timeline.find(md => now >= md.start && now <= md.end);
+const currentAntardasha = currentMahadasha.antardashas.find(ad => now >= ad.start && now <= ad.end);
+
+console.log(`Current Mahadasha: ${currentMahadasha.planet}`);
+console.log(`Current Antardasha: ${currentAntardasha.planet}`);
+```
+
+---
+
+### 3. Save SVG to File
 
 ```typescript
 import fs from 'fs';
@@ -390,7 +443,7 @@ console.log('Chart saved to kundali.svg');
 
 ---
 
-### 3. Embed in HTML
+### 4. Embed in HTML
 
 ```html
 <!DOCTYPE html>
@@ -438,7 +491,7 @@ console.log('Chart saved to kundali.svg');
 
 ---
 
-### 4. Express.js API Endpoint
+### 5. Express.js API Endpoint
 
 ```typescript
 import express from 'express';
@@ -488,7 +541,7 @@ app.listen(3000, () => console.log('Server running on http://localhost:3000'));
 
 ---
 
-### 5. Next.js / React
+### 6. Next.js / React
 
 ```tsx
 // app/api/chart/route.ts (Next.js App Router)
@@ -584,6 +637,21 @@ interface NavamsaChart {
     longitude: number;
   };
 }
+
+interface Mahadasha {
+    planet: string;
+    start: Date;
+    end: Date;
+    durationYears: number;
+    antardashas: Antardasha[];
+}
+
+interface Antardasha {
+    planet: string;
+    start: Date;
+    end: Date;
+    durationYears: number;
+}
 ```
 
 ---
@@ -606,8 +674,8 @@ We are actively building **vedic-calc** into the most complete Vedic astrology S
 - [ ] **D-60 (Shashtiamsa)** — past life karma
 
 ### v1.2 — Dasha Systems
-- [ ] **Vimshottari Dasha** — the most widely used 120-year dasha system
-- [ ] **Antardasha (Bhukti)** — sub-periods within each Mahadasha
+- [x] **Vimshottari Dasha** — the most widely used 120-year dasha system
+- [x] **Antardasha (Bhukti)** — sub-periods within each Mahadasha
 - [ ] **Pratyantardasha** — sub-sub-periods
 - [ ] **Yogini Dasha** — 36-year cycle dasha system
 - [ ] **Ashtottari Dasha** — 108-year dasha system
