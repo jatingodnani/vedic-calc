@@ -31,7 +31,7 @@ describe('Planetary Position', () => {
 
         it('should handle negative angles', () => {
             expect(getSign(-30)).toBe(Sign.PISCES);
-            expect(getSign(-90)).toBe(Sign.SAGITTARIUS);
+            expect(getSign(-90)).toBe(Sign.CAPRICORN);
         });
     });
 
@@ -70,14 +70,14 @@ describe('Planetary Position', () => {
             expect(getNakshatraPada(6.66)).toBe(2);
             expect(getNakshatraPada(6.67)).toBe(3);
             expect(getNakshatraPada(10)).toBe(4);
-            expect(getNakshatraPada(13.33)).toBe(1); // Next nakshatra
+            expect(getNakshatraPada(13.34)).toBe(1); // Next nakshatra
         });
     });
 
     describe('calculatePlanetaryPosition', () => {
         it('should return complete planetary position', () => {
             const pos = calculatePlanetaryPosition(45.5, 0, 1);
-            
+
             expect(pos.longitude).toBe(45.5);
             expect(pos.sign).toBe(Sign.TAURUS);
             expect(pos.degreeInSign).toBe(15.5);
@@ -87,7 +87,7 @@ describe('Planetary Position', () => {
         it('should detect retrograde planets', () => {
             const posDirect = calculatePlanetaryPosition(100, 0, 1);
             const posRetrograde = calculatePlanetaryPosition(100, 0, -1);
-            
+
             expect(posDirect.isRetrograde).toBe(false);
             expect(posRetrograde.isRetrograde).toBe(true);
         });

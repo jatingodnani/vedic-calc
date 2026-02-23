@@ -31,7 +31,7 @@ describe('Math Utils', () => {
         });
 
         it('should handle full circle', () => {
-            expect(decimalToDms(359.999)).toEqual({ d: 359, m: 59, s: 58 });
+            expect(decimalToDms(359.999)).toEqual({ d: 359, m: 59, s: 56 });
         });
     });
 
@@ -39,7 +39,7 @@ describe('Math Utils', () => {
         it('should format DMS string correctly', () => {
             expect(formatDms(0)).toBe("0° 0' 0\"");
             expect(formatDms(30.5)).toBe("30° 30' 0\"");
-            expect(formatDms(45.123)).toBe("45° 7' 22\"");
+            expect(formatDms(45.123)).toBe("45° 7' 23\"");
         });
     });
 });

@@ -742,6 +742,19 @@ Contributions are welcome. Whether it is a bug fix, new feature, or documentatio
 
 Please check the [open issues](https://github.com/jatingodnani/vedic-calc/issues) before starting work on a new feature.
 
+### Publishing New Versions
+
+This project uses an automated GitHub Actions pipeline to publish to NPM.
+To deploy a new update:
+
+1. Increase the version number in `package.json` (e.g., `"1.1.1"` to `"1.1.2"`)
+2. Commit the changes: `git commit -am "chore: bump version"`
+3. Push to the main branch: `git push origin main`
+4. Create a new tag matching your version: `git tag v1.1.2`
+5. Push the tag to trigger the NPM publish workflow: `git push origin v1.1.2`
+
+The GitHub Action will automatically run all tests before publishing. It will explicitly skip NPM publishing on standard branch pushes to prevent errors unless a tag is detected.
+
 ---
 
 ## Resources

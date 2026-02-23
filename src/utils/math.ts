@@ -8,7 +8,7 @@ export function normalizeAngle(angle: number): number {
     if (normalized < 0) {
         normalized += 360;
     }
-    return normalized;
+    return Math.abs(normalized) === 0 ? 0 : normalized;
 }
 
 /**

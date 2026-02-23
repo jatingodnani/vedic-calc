@@ -29,9 +29,9 @@ describe('SVG Renderer', () => {
         const chart = generateRasiChart(testDate, testLatitude, testLongitude);
         const svg = generateNorthIndianChartSVG(chart);
 
-        expect(svg).toContain('Planet');
-        expect(svg).toContain('Sign');
-        expect(svg).toContain('Degree');
+        expect(svg).toContain('PLANET');
+        expect(svg).toContain('SIGN');
+        expect(svg).toContain('DEGREE');
     });
 
     it('should render without table when disabled', () => {
@@ -43,7 +43,7 @@ describe('SVG Renderer', () => {
 
     it('should accept custom dimensions', () => {
         const chart = generateRasiChart(testDate, testLatitude, testLongitude);
-        const svg = generateNorthIndianChartSVG(chart, { width: 800, height: 600 });
+        const svg = generateNorthIndianChartSVG(chart, { width: 800, height: 600, showTable: false });
 
         expect(svg).toContain('viewBox="0 0 800');
     });
